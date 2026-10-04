@@ -183,3 +183,16 @@ compared within each map. Shallow = inactive, deep = active.
 - Limits: depth is only a proxy for active/inactive; the user's distinction is about contesting
   boosts and bombs vs deflecting them, which needs element-level measurement. Ranked defenders rotate
   and do not coordinate; comp (fixed defense partners) is the better test once comp replays are in.
+
+## Do certain players do better on certain maps? (the user's question) (2026-10-03)
+Script: `player_maps.py`. 1.2 million player-games, 4v4, 2024 on (public + ranked). Each game's
+expected result comes from our rating gap; a player's "map edge" = how much more they win than
+expected on a map, minus how they do everywhere else.
+- Reality check (split each player's games on a map into alternating halves): the edge in one half
+  does not predict the other. Correlation -0.025 (5,655 player-map pairs, 40+ games), -0.008 (980
+  pairs, 100+ games), 0.043 (120 pairs, 200+ games). None of the spread is beyond chance.
+- Yardstick: overall over-performance beyond our rating does repeat (correlation 0.235, 1,301 players),
+  so the method can see real effects.
+- Conclusion: players' success on particular maps is almost all luck; skill carries across maps.
+  "Map specialists" (e.g. +21 points on one map over 63 games) are what the luckiest of thousands of
+  records look like by chance.

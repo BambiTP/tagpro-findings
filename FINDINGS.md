@@ -249,6 +249,26 @@ precise accuracy figure.
 
 ---
 
+## 7. Do certain players do better on certain maps? (solid: no)
+
+1.2 million player-games (4v4, public and ranked, 2024 on). For each game, our rating gives the chance
+the player's team should win; a player's "map edge" is how much more they win than that on one map,
+compared with everywhere else. If map edges were real, a player's edge in half their games on a map
+would predict their edge in the other half:
+
+| Games per map required | Player-map pairs | Split-half correlation | Share of the spread beyond chance |
+|---|---|---|---|
+| 40+ | 5,655 | -0.025 | 0% |
+| 100+ | 980 | -0.008 | 0% |
+| 200+ | 120 | 0.043 | 4% |
+| Yardstick: overall over-performance (any map) | 1,301 players | 0.235 | real |
+
+Skill carries across maps; success on a particular map is almost all luck. Apparent "map specialists"
+(for example +21 points on one map over 63 games) are what the luckiest of thousands of records look
+like by chance.
+
+---
+
 ## Corrections made along the way
 
 - An early version said Basenji was the most skill-decided map. That came from a first, rough
