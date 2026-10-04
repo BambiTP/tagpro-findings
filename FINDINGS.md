@@ -1,160 +1,258 @@
-# Findings log
+# Findings
 
-Working notes from the analytics project. Each entry: what was tested, data, result, caveats.
+Plain-language results with the full numbers behind them. Terms are explained, with real screenshots,
+in [GLOSSARY.md](GLOSSARY.md). The order the work was actually done in, including dead ends and
+corrections, is in [RESEARCH_LOG.md](RESEARCH_LOG.md).
 
-## Step 1 (2026-10-03): ranked CTF, 10,548 matches with OpenSkill pre-game win probability
+**How to read the confidence notes:** "solid" means it survived the checks that could have broken it;
+"suggestive" means a real pattern with a plausible alternative explanation still standing; "no
+verdict" means the data cannot tell yet.
 
-Data: `~/nte/data/tagpro.db`, ranked CTF matches that carry a pre-game win probability
-(`match_ranked_data`), not voided. Scripts: `step1_load.py`, `step1_analyze.py`.
+## Data used
 
-### Ranked matchmaking is extremely balanced
-- The pre-game favourite is predicted to win only 52.2% on average; 80% of games are
-  predicted between 50% and 55%. Favourites actually won 52.5%.
-- The ratings are slightly underconfident: calibration slope 1.33 (favourites win a bit
-  more than predicted once the gap exceeds 55%: predicted 57.4%, actual 60.1%).
+| Source | What it contains | Size |
+|---|---|---|
+| Ranked replays | Every player's position and speed 4 times a second, flags, powerups, map elements | 10,564 capture-the-flag games, March 2025 to October 2026 |
+| Ranked match records | Events (grabs, caps, returns, pops, powerups) and the matchmaker's pre-game win probability | about 135,000 matches; 10,548 with win probability |
+| tagpro.eu history | Final teams and scores of public and ranked games | 2.48 million finished capture-the-flag games, 2015 to 2026 |
+| Competitive replays | Comp (NALTP) games since replays began in September 2023 | downloading, about 1,000 of 3,749 so far |
 
-### A. Luck by map: inconclusive
-- Because nearly every game is a coin flip by rating, there is almost no skill gap to measure
-  upsets against. Per-map skill slopes have standard errors around 0.5, so no map can be
-  told apart from any other.
-- Pooled test of "more bombs means more luck": each extra bomb changes the skill slope by
-  -0.09 (standard error 0.11, p = 0.42). Pointing the expected way, but no evidence.
-- Needs a different luck measure that does not rely on rating gaps (ideas: how well the
-  first half of a game predicts the second; how consistent the same players' results are
-  across repeated games on a map).
+Game quality check: 99.1% of ranked replays are clean (no uneven teams for more than 30 seconds and
+no player idle more than 10% of the game), so 3v4s and idle players cannot explain the ranked results.
+<details><summary>Clean games by map</summary>
 
-### B. Powerups and winning, beyond team skill
-Logistic regression of the result on pre-game skill plus each team's pickup difference:
+| Map                   |   Games | Clean   | Uneven teams 30 s+   | A player idle 10%+   |
+|:----------------------|--------:|:--------|:---------------------|:---------------------|
+| OTI MERALD            |     102 | 95.1%   | 2.9%                 | 2.0%                 |
+| Milano 2              |     684 | 98.2%   | 1.0%                 | 0.9%                 |
+| Oak                   |     116 | 98.3%   | 0.9%                 | 0.9%                 |
+| Moon Base 2024        |     929 | 98.8%   | 1.0%                 | 0.4%                 |
+| Poppy [MM26 Champion] |     193 | 99.0%   | 0.5%                 | 0.5%                 |
+| Combine               |     687 | 99.0%   | 0.4%                 | 0.6%                 |
+| Audacity 2            |     801 | 99.0%   | 0.5%                 | 0.5%                 |
+| A Flaccid Type Map    |     701 | 99.0%   | 0.4%                 | 0.7%                 |
+| Centenaria            |     820 | 99.0%   | 0.9%                 | 0.1%                 |
+| Deadlift              |     126 | 99.2%   | 0.0%                 | 0.8%                 |
+| Sardonica             |     638 | 99.2%   | 0.3%                 | 0.6%                 |
+| Galapagos 2           |     272 | 99.3%   | 0.4%                 | 0.4%                 |
+| OTI Jardim            |     576 | 99.3%   | 0.7%                 | 0.0%                 |
+| Thicket 2             |     626 | 99.4%   | 0.6%                 | 0.0%                 |
+| Camp Dog              |     161 | 99.4%   | 0.6%                 | 0.0%                 |
+| Willow 2              |     183 | 99.5%   | 0.5%                 | 0.0%                 |
+| Asida                 |     847 | 99.5%   | 0.2%                 | 0.2%                 |
+| Shake                 |     481 | 99.6%   | 0.2%                 | 0.2%                 |
+| Oncilla               |     468 | 99.8%   | 0.0%                 | 0.2%                 |
+| Basenji               |     594 | 99.8%   | 0.0%                 | 0.2%                 |
+| Corner Store          |     126 | 100.0%  | 0.0%                 | 0.0%                 |
 
-| Powerup | Effect of one extra pickup (log odds) | About, in win chance | Team with more wins |
+</details>
+
+---
+
+## 1. Our own rating beats the ranked matchmaker (solid)
+
+A team rating built from every player's tagpro.eu history (each player's rating taken from before the
+game, so the result cannot leak in), tested on 6,421 ranked games:
+
+| Predictor | Picks the winner | Log loss (lower is better; coin flip = 0.6931) |
+|---|---|---|
+| Ranked matchmaker | 52.7% | 0.6876 |
+| Our rating | 58.7% | 0.6680 |
+
+When our rating sees a real gap, the matchmaker had called the game even:
+
+| Games | Stronger team (our rating) won | Matchmaker expected |
+|---|---|---|
+| All 1,127 with a 100+ point gap | 70.3% | 52.1% |
+| The 374 of those in the lowest-rated quarter of games | 73.0% | 50.0% |
+
+Underrated players (experienced players with low ranked ratings) are real and show up most in
+low-rated games. An earlier attempt using players' later ranked ratings worked much worse, because
+ranked ratings drift between seasons.
+
+---
+
+## 2. Parking the bus hurts the team that does it (solid)
+
+13,959 stretches where a team led. Shape is measured only while both flags were home, as the number
+of the leader's players in its own half compared with how that same team played while tied.
+
+| Leader's shape vs when tied (fifth)   |   Lead stretches |   Extra players in own half | Leader won   |   Avg minutes left at start |
+|:--------------------------------------|-----------------:|----------------------------:|:-------------|----------------------------:|
+| Pushed up most                        |             2792 |                       -0.87 | 85.1%        |                         5.5 |
+| Pushed up                             |             2792 |                       -0.4  | 80.2%        |                         5.2 |
+| About the same                        |             2791 |                       -0.17 | 76.5%        |                         5.1 |
+| Pulled back                           |             2792 |                        0.05 | 73.4%        |                         5   |
+| Pulled back most                      |             2792 |                        0.42 | 69.9%        |                         4.7 |
+
+| Model of whether the leader won (effect per extra player pulled back, log odds) | Effect | Standard error |
+|---|---|---|
+| Time left, lead size, matchmaker probability | -0.93 | 0.05 |
+| + our rating gap (8,553 stretches with ratings) | -0.92 | 0.06 |
+| + how far the trailing team pushed up | -0.87 | 0.07 |
+| Only stretches where the trailing team did not push up (977) | -0.42 | 0.18 |
+
+The last row is the cleanest: the leader's retreat was its own choice, and it still cost games.
+
+Side result (suggestive): when the trailing team pushes extra players forward, the leader wins more
+(+0.66 log odds per extra player, standard error 0.07). This fits "changing shape because of the score
+hurts whoever does it", but teams that are losing badly also push up out of desperation, so part of it
+may be a symptom.
+
+---
+
+## 3. Powerups (suggestive)
+
+10,548 ranked games, each team's pickups compared, controlling for the matchmaker's probability:
+
+| Powerup | Effect of one extra pickup (log odds) | About, in win chance | Team with more of it won |
 |---|---|---|---|
 | Tagpro | 0.179 (se 0.010) | +4.5 points | 60.5% |
 | Rolling bomb | 0.155 (se 0.010) | +3.9 points | 59.1% |
 | Juke juice | 0.101 (se 0.010) | +2.5 points | 55.7% |
 
-(Skill predicted about 50% for the team with more of each.)
+Tagpro is worth the most, rolling bomb close behind, juke juice about half. "Whoever wins the tagpros
+wins" is overstated: the team with more still loses about 4 in 10. These are upper bounds: a team in
+control of a game also collects more powerups because it is in control.
 
-- Tagpro is the most valuable powerup, but only slightly more than rolling bomb. Juke juice is
-  worth roughly half as much, consistent with "not useless, just not as good."
-- "Whoever wins the tagpros wins" is overstated: the team with more tagpros still loses about
-  4 games in 10.
-- Caveat: this is association, not cause. A team that is controlling the game probably
-  collects more powerups because it is controlling, so these numbers are upper bounds on
-  what the powerups themselves are worth.
+---
 
-## Underrated players and our own rating (2026-10-03)
+## 4. Luck by map
 
-### First try: future ranked rating (weak, abandoned)
-- "Real level" = the player's ranked rating later on. With 20 to 60 games ahead, teams with hidden
-  skill won 61.5% of games the matchmaker called even. The user pointed out ratings climb too slowly
-  for that horizon; using end-of-record rating instead made the signal weaker (the median player
-  looks 62 points worse at the end), which suggests ranked ratings drift or reset between seasons.
-  Ranked rating over time is not a reliable yardstick. Script: `underrated.py`.
+### 4a. Bomb luck: Combine has the most (solid as a description)
 
-### Our own rating from tagpro.eu (the user's suggestion) works much better
-- Team Elo built from 2.48 million finished public and ranked CTF matches on tagpro.eu,
-  2015-05-25 to 2026-09-16, registered players only, ratings taken from before each game.
-  Group games left out (they mix comp, minigames and other things). Script: `own_rating.py`.
-- Tested on 6,421 ranked CTF games that tagpro.eu links to a ranked record:
+Bomb gifts (see the glossary) per game, by map, from 10,564 replays:
 
-| Predictor | Picks the winner | Log loss (lower is better; coin flip 0.6931) |
-|---|---|---|
-| Ranked matchmaker (OpenSkill) | 52.7% | 0.6876 |
-| Our rating | 58.7% | 0.6680 |
+| Map                   |   Games |   Bombs set off per game |   Bomb gifts per game |   Free past 4s per game | Caps within 10 s of a gift   |   Bomb deaths per game |   Bomb returns per game |
+|:----------------------|--------:|-------------------------:|----------------------:|------------------------:|:-----------------------------|-----------------------:|------------------------:|
+| Combine               |     687 |                    66.76 |                  5.29 |                    1.05 | 10.5%                        |                   4.31 |                    2.19 |
+| Poppy [MM26 Champion] |     193 |                    51.7  |                  4.87 |                    1.04 | 10.4%                        |                   4.95 |                    3.49 |
+| Galapagos 2           |     272 |                    53.52 |                  4.88 |                    0.99 | 11.5%                        |                   5.44 |                    1.89 |
+| A Flaccid Type Map    |     701 |                    51.6  |                  5.26 |                    0.81 | 10.3%                        |                   3.69 |                    2.05 |
+| Willow 2              |     183 |                    53.93 |                  4.11 |                    0.79 | 9.4%                         |                   6.04 |                    2.63 |
+| Moon Base 2024        |     929 |                    25.99 |                  2.78 |                    0.74 | 5.8%                         |                   2.23 |                    1.07 |
+| Camp Dog              |     161 |                    43.84 |                  3.98 |                    0.73 | 7.1%                         |                   3.75 |                    2.07 |
+| Deadlift              |     126 |                    26.06 |                  3.07 |                    0.73 | 5.8%                         |                   1.29 |                    0.52 |
+| Shake                 |     481 |                    47.26 |                  4    |                    0.72 | 7.4%                         |                   5.14 |                    3.52 |
+| Thicket 2             |     626 |                    26.64 |                  2.34 |                    0.67 | 5.4%                         |                   1.7  |                    0.93 |
+| Centenaria            |     820 |                    43.2  |                  4.82 |                    0.61 | 10.5%                        |                   5.02 |                    2.44 |
+| Asida                 |     847 |                    42.84 |                  3.99 |                    0.58 | 9.1%                         |                   5.08 |                    2.33 |
+| Audacity 2            |     801 |                    27.41 |                  3.22 |                    0.52 | 7.2%                         |                   1.95 |                    0.48 |
+| Sardonica             |     638 |                    24.39 |                  2.08 |                    0.52 | 5.5%                         |                   2.97 |                    1.54 |
+| OTI MERALD            |     102 |                    22.63 |                  2.06 |                    0.45 | 5.6%                         |                   2.25 |                    0.38 |
+| OTI Jardim            |     576 |                    27.15 |                  2.93 |                    0.44 | 6.4%                         |                   2.07 |                    0.45 |
+| Milano 2              |     684 |                    24.77 |                  2.1  |                    0.39 | 4.9%                         |                   3.06 |                    1.42 |
+| Oncilla               |     468 |                    24.9  |                  2.65 |                    0.34 | 6.1%                         |                   1.24 |                    0.44 |
+| Corner Store          |     126 |                    23.32 |                  2.55 |                    0.31 | 4.8%                         |                   1.52 |                    1.13 |
+| Basenji               |     594 |                    24.26 |                  2.33 |                    0.29 | 4.2%                         |                   2.31 |                    1.87 |
+| Oak                   |     116 |                    24.87 |                  2.78 |                    0.26 | 5.4%                         |                   2.2  |                    1.66 |
 
-- In the 1,127 games where our rating saw a gap of 100+ points, the stronger team won 70.3%;
-  the matchmaker expected 52.1%. In the lowest-rated quarter of games: 73.0% (matchmaker 50.0%).
-- So the matchmaker misses a lot of real skill, especially in low-rated games, which fits the
-  user's point about underrated players turning up there.
+Across all maps: 3.5 bomb gifts and 0.62 free past 4s per game; 7.5% of caps come within 10 seconds of a
+bomb gift; a free past 4 turns into a cap within 10 seconds 28% of the time. Combine has the most bomb
+gifts and free past 4s; Basenji and Oak the fewest.
 
-### Luck by map, using our rating
-- How strongly skill decides the winner, per 100 rating points (log odds): highest on Basenji
-  (0.97) and Audacity 2 (0.77); lowest on Poppy (0.19, small sample) and Combine (0.45).
-- Combine is the second least skill-decided map, which matches the user's view that it is the
-  most luck-based. But the gap from the other maps is not statistically solid yet
-  (difference -0.08, standard error 0.14, p = 0.58). Direction agrees; evidence is weak.
+### 4b. Overall luck, ignoring causes (no verdict)
 
-## Replay-based results (2026-10-03): 10,564 ranked CTF replays with full positions
+How strongly our rating gap predicts the winner on each map, 2024 to 2026 only, public and ranked
+measured separately (higher = more skill-decided, lower = more luck):
 
-Scripts: `replay_state.py` (positions every 0.25 s), `concepts.py`, `analyze_states.py`, `step3_results.py`.
+| Map                |   Public games |   Skill effect, public |   Ranked games |   Skill effect, ranked |
+|:-------------------|---------------:|-----------------------:|---------------:|-----------------------:|
+| Willow 2           |            614 |                  0.469 |            825 |                  0.408 |
+| Thicket 2          |            573 |                  0.544 |           1924 |                  0.433 |
+| Professor Oak      |            –   |                –       |            907 |                  0.473 |
+| Combine            |           1685 |                  0.643 |           1906 |                  0.509 |
+| Asida              |           2326 |                  0.495 |           3116 |                  0.539 |
+| Milano 2           |           1069 |                  0.49  |           2079 |                  0.554 |
+| Centenaria         |           1869 |                  0.747 |           2545 |                  0.572 |
+| Sardonica          |           1514 |                  0.441 |           2399 |                  0.574 |
+| OTI Jardim         |           2017 |                  0.441 |           1775 |                  0.602 |
+| A Flaccid Type Map |            853 |                  0.592 |           2212 |                  0.614 |
+| Audacity 2         |           1573 |                  0.671 |           2456 |                  0.617 |
+| Basenji            |            511 |                  0.427 |           1443 |                  0.634 |
+| Moon Base 2024     |           2157 |                  0.623 |           2929 |                  0.649 |
+| Oncilla            |            585 |                  0.677 |           1117 |                  0.682 |
+| Shake              |           1036 |                  0.532 |           1213 |                  0.698 |
+| Capri              |            715 |                  0.641 |            –   |                –       |
+| Crawfish Boil      |           1224 |                  0.702 |            –   |                –       |
+| Deadlift           |            595 |                  0.681 |            –   |                –       |
+| Flume              |           1044 |                  0.655 |            –   |                –       |
+| Galapagos          |           1337 |                  0.76  |            –   |                –       |
+| OTI MERALD         |           1399 |                  0.493 |            –   |                –       |
+| Oak                |            945 |                  0.718 |            –   |                –       |
+| Thicket            |           1794 |                  0.707 |            –   |                –       |
+| Transilio          |            697 |                  0.807 |            –   |                –       |
+| hopscotch          |            960 |                  0.746 |            –   |                –       |
+| tequila redbull    |            827 |                  0.746 |            –   |                –       |
 
-### Bomb luck by map
-- Measure: a bomb went off within 3 tiles of the flag carrier in the 3 seconds before a cap or return.
-- Overall 3.4% of caps and 5.5% of returns. Highest for caps: Centenaria 6.8%, Shake 6.3%,
-  A Flaccid Type Map 5.0%. Combine 3.7%, middle of the pack, despite having the most bomb
-  explosions per game of the common maps (67).
-- So if Combine is luck-heavy, it is not mainly through bombs deciding caps by this measure.
-  Caveat: crude measure (distance and time window chosen by hand; bomb knockbacks that move
-  chasers, not carriers, are not counted).
+The public and ranked rankings barely agree (correlation 0.21 across the 14 maps with both), so with
+500 to 3,000 games per map the ranking is mostly noise. Willow 2 and Thicket 2 lean lucky in both.
+Combine is 4th luckiest in ranked but middle in public, and not statistically different from other
+maps in either. Two traps had to be removed to get here: comparing across years (the player pool
+changed) and mixing ranked with public (ranked teams are balanced, so rating gaps there are more often
+the rating's own error).
 
-### Parking the bus
-- 13,959 stretches where a team led, with positioning measured only while both flags were home
-  (so it reflects choice, not chasing). "Extra back" = how many more of the leader's players sat in
-  their own half than that same team did while tied.
-- Every extra player pulled back lowered the leader's chance of winning: -0.93 log odds per player
-  (standard error 0.05), controlling for time left, lead size and pre-game win probability.
-  Win rate by fifth of extra-back: 85% (pushed up most) down to 70% (pulled back most).
-- Last 3 minutes only: same direction, -0.85 per player (standard error 0.19).
-- Supports the user's view that changing play to protect a lead does not help, and suggests it hurts.
-- Caveat: teams may get pushed back because the opponent is pressing, not by choice; skill control
-  here is only the matchmaker's probability (should be redone with our own rating).
+Bombs can decide moments on Combine without that clearly changing who wins whole games, which is a far
+noisier outcome.
 
-### Known bug
-- Past N above 4 appears (about 9% of caps): replays give a rejoining player a new slot, so an
-  enemy can be counted twice. To fix: count only enemies present at that moment.
+---
 
-### Bomb luck, user's definition (bombs displace players who cannot react)
-- "Bomb gift": a bomb goes off near a carrier's enemies and the carrier's past N jumps within a second
-  because one of those enemies is displaced. "Bomb death": a player near a bomb dies within 1.5 s.
-  Script: `bomb_luck.py` (after fixing the past N double count from rejoined players).
-- All maps: 3.5 bomb gifts and 0.62 free past 4s per game; 7.5% of caps come within 10 s of a bomb
-  gift; 3.4 bomb deaths per game, half of them carriers (returns).
-- Combine has the MOST bomb gifts (5.3 per game) and the most free past 4s (1.05 per game, with Poppy),
-  and 10.5% of its caps follow a gift (3rd highest). Basenji is the least bomb-affected (4.2% of caps),
-  which matches it being the most skill-decided map by our rating.
-- A bomb gift that reaches past 4 turns into a cap within 10 s 28% of the time.
+## 5. Active vs inactive defense (no verdict)
 
-## Map luck without looking at causes (2026-10-03)
+Defensive depth (see the glossary) while under attack, team-games split into fifths:
 
-Measure: how strongly our own pre-game rating gap predicts the winner on each map ("skill slope").
-Lower = the better team wins less reliably = more luck. Scripts: `map_luck.py` and the split run
-saved to `data/map_luck_split_2024_2026.csv`.
+| Defense depth (fifth)   |   Team-games |   Avg distance from flag (tiles) |   Enemy grabs per minute under attack | Grabs that became caps   | Won   |
+|:------------------------|-------------:|---------------------------------:|--------------------------------------:|:-------------------------|:------|
+| Most inactive           |         3567 |                             2.45 |                                 16.59 | 18.2%                    | 56.5% |
+| Inactive                |         3566 |                             3.1  |                                 15.95 | 18.2%                    | 57.0% |
+| Middle                  |         3566 |                             3.59 |                                 15.99 | 18.5%                    | 53.5% |
+| Active                  |         3566 |                             4.2  |                                 16.46 | 18.8%                    | 50.1% |
+| Most active             |         3566 |                             5.5  |                                 17.92 | 19.3%                    | 46.1% |
 
-- Across all eras, newer maps looked luckier and older maps more skill-based, but that mixes in
-  changes in the player pool. Comparing only 2024-2026 games removes that.
-- Within 2024-2026, maps played mostly in ranked looked luckier than public-heavy maps. That is a
-  measurement effect (ranked teams are balanced, so a rating gap there is more often our rating's
-  own error), so public and ranked have to be measured separately.
-- Measured separately, the public and ranked rankings of maps barely agree (correlation 0.21 over
-  14 maps). At these sample sizes (500-3,000 games per map) the overall luck ranking is mostly noise.
-- Consistently on the luckier side in both: Willow 2 and Thicket 2.
-- Combine: 4th luckiest of 15 in ranked, middle of the pack in public. Not statistically different
-  from other maps in either (ranked difference -0.06, standard error 0.06; public +0.02, se 0.04).
-- Honest bottom line: the cause-free measure cannot yet single out Combine. The cause-specific
-  bomb-gift measure does (most bomb gifts and free past 4s per game). Both can be true: bombs may
-  decide moments on Combine without that showing up clearly in who wins whole games.
+That looks like a clear win for inactive defense, but the same game drives both: a team being outplayed
+gets pulled out of position. The cleanest test uses each team's defenders' habit from their OTHER
+games (742 players with 11 or more games), which cannot be caused by this game:
 
-## Detector checks against the real client (2026-10-03)
-- Loaded replays into the user's tagpro-local viewer (the real TagPro client) headlessly and compared
-  screenshots and client positions with our data. Our positions are right: across 1,036 caps the
-  carrier touches the flag exactly when the score changes; the viewer draws about 0.75 s ahead of its
-  own clock and falls behind further when it renders under ~55 frames per second.
-- Fixed after visual checks: OD now requires the enemy flag home; powerup respawns are only the
-  final tile value (6.1/6.2/6.3; 6.x01-6.x12 is a 3-second warning countdown, which had inflated
-  "powerup fights" tenfold); stalemates need real grab attempts.
-- Small-sample verdicts (2-4 each): regrab, anti regrab, 4OD, break-off grab and bomb gift all looked
-  right after the fixes.
+| Defenders' habit (fifth)   |   Team-games |   Habit (tiles deeper than map average) | Won   |
+|:---------------------------|-------------:|----------------------------------------:|:------|
+| Most inactive              |         3567 |                                   -0.44 | 50.2% |
+| Inactive                   |         3566 |                                   -0.16 | 53.3% |
+| Middle                     |         3566 |                                    0.01 | 54.1% |
+| Active                     |         3566 |                                    0.2  | 52.7% |
+| Most active                |         3567 |                                    0.56 | 53.1% |
 
-### Parking the bus, redone (our rating + opponent push)
-- 8,553 lead stretches in games with our rating. Effect of each extra player the leader pulls back
-  (log odds of winning): -0.92 with the original controls; -0.92 adding our rating gap; -0.87 adding
-  how far the trailing team pushed up. Barely moves, so better teams or opponent pressure do not
-  explain it.
-- Choice test: only stretches where the trailing team did NOT push up (so the leader's retreat was
-  its own choice): -0.42 (standard error 0.18), smaller but still clearly negative (977 stretches).
-- Side finding: when the trailing team pushes players up beyond how it played while tied, the LEADER
-  wins more: +0.66 log odds per extra player pushed up (standard error 0.07). Changing shape because
-  of the score hurts whichever team does it, leading or trailing, which fits the user's "flow game"
-  view that adjusting to the score does not help.
-- Caveat: the trailing team's push can also be a symptom (teams push when they are losing badly),
-  so the side finding is suggestive, not proven.
+No difference: -0.02 log odds per standard deviation more active, standard error 0.02, p = 0.31, with
+our rating as the skill control. In ranked, defensive depth is mostly a symptom of how the game is
+going, not a style that wins or loses. Limits: depth is only a stand-in for the user's distinction
+(contesting vs deflecting elements), and ranked defenders rotate and do not coordinate; competitive
+games with fixed defense partners are the better test once those replays are in.
+
+---
+
+## 6. How the strategy detectors were checked
+
+Replays were loaded into the real TagPro client and frozen at moments each detector flagged.
+Positions match the client to within about half a tile; across 1,036 caps the carrier touches the
+flag exactly when the score changes.
+
+| Detector | First check | Fix | After the fix |
+|---|---|---|---|
+| Regrab | 2 of 2 right | none | right |
+| Anti regrab | 2 right, 1 unclear | frames taken a moment later (respawns) | right |
+| 4OD | 2 of 3 right | require the enemy flag to be home | right |
+| Break-off grab | 0 of 3 right | count only real powerup respawns (the 3-second warning countdown had inflated powerup fights tenfold, 34 to 3.4 per game) | right |
+| Bomb gift | needs before and after frames | none | right |
+| Stalemate | every one started at 0:00 | require real grab attempts | rare in ranked |
+
+These are small samples (2 to 4 per detector): they show the detectors are not badly broken, not a
+precise accuracy figure.
+
+---
+
+## Corrections made along the way
+
+- An early version said Basenji was the most skill-decided map. That came from a first, rough
+  analysis; the careful one (4b) shows per-map rankings are mostly noise. Only Basenji's low bomb-gift
+  count stands.
+- Past N could exceed 4 when a player rejoined (a new replay slot counted twice). Fixed before the
+  bomb-gift and later results.
