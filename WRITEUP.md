@@ -286,7 +286,7 @@ like by chance.
 
 ## 8. "Plague offense": Bambi's stealth grabbing
 
-One player plays a style nobody else
+One player, Bambi, plays a style nobody else
 really uses (disclosure: Bambi also supplied the game knowledge behind this analysis): on offense, never let the defense get solid contact or push you (grazes are fine), keep
 moving around them, and grab when the defense suddenly gets out of position or a teammate blocks a
 defender. Success is measured by getting past 2 or holding long, not by caps (caps depend on
