@@ -13,7 +13,9 @@ Shows, while you watch any replay on tagpro.koalabeast.com (or a local tagpro-lo
 ## Install
 1. Install a userscript manager: [Tampermonkey](https://www.tampermonkey.net/) or
    [Violentmonkey](https://violentmonkey.github.io/).
-2. Open [tagpro-xcaps.user.js](tagpro-xcaps.user.js), click **Raw**, and confirm the install.
+2. Open [tagpro-xcaps.user.js](tagpro-xcaps.user.js), click **Raw**, and confirm the install. (While
+   this repository is private, the Raw link only works when you're logged in to GitHub; if your userscript
+   manager can't open it, create a new script in it and paste the file's contents instead.)
 3. Open any replay (`https://tagpro.koalabeast.com/game?replay=...`) and press play.
 
 ## How it works
