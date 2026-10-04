@@ -97,7 +97,7 @@ Timings confirmed by Bambi.
 
 ## How pops happen
 - Mostly containment: chasers cut off the carrier's escape routes and close in.
-- A single chaser can "solo" a carrier, but it is hard and mostly a matter of individual skill, not strategy. (Bots can solo with 100% accuracy.)
+- A "solo" is a carrier dying to a single enemy. Bambi's view: it should never happen; carriers should only die when contained by 2 or more enemies, so a solo is an unforced error by the carrier. (Bots can solo with 100% accuracy.)
 
 ## Offense between grabs
 - The offense waits for boosts to respawn and tries rub grabs. Long stretches of this with no successful grab and hold are a stalemate.
