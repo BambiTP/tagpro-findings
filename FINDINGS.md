@@ -192,6 +192,13 @@ maps in either. Two traps had to be removed to get here: comparing across years 
 changed) and mixing ranked with public (ranked teams are balanced, so rating gaps there are more often
 the rating's own error).
 
+Worked example of the noise (spotted by the user): Oak and Professor Oak are essentially the same
+map, yet they sit at opposite ends of this table. Oak was only played in public games (945, skill
+effect 0.72, give or take 0.06) and Professor Oak only in ranked (907, 0.47, give or take 0.09).
+Ranked values run lower for measurement reasons, and the ranges are wide; with 26 maps compared, a
+pair this far apart is expected by chance. Two versions of one map landing far apart is exactly what
+noisy per-map numbers look like.
+
 Bombs can decide moments on Combine without that clearly changing who wins whole games, which is a far
 noisier outcome.
 

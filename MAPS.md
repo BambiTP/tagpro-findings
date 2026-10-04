@@ -12,7 +12,7 @@ how each number was checked is in [FINDINGS.md](FINDINGS.md).
 | Regrab chains per game | A carrier returned, then the same flag regrabbed by their team within 2 s |
 | Bombs set off / bomb gifts / free past 4s | See the bomb gift entry in the glossary |
 | Caps after a bomb gift | Share of caps within 10 s of a bomb gift |
-| Skill effect, ranked / public | How strongly our rating gap predicts the winner (2024-2026, log odds per 100 points). Higher = more skill-decided. These per-map values are noisy; see findings section 4b |
+| Skill effect, ranked / public | How strongly our rating gap predicts the winner (2024-2026, log odds per 100 points). Higher = more skill-decided. Do not read these as a ranking: they are noisy (two versions of Oak land far apart), and ranked and public values are not comparable with each other; see findings section 4b |
 | Clean games | No uneven teams for 30 s+ and no player idle 10%+ of the game |
 
 | Map                   |   Ranked replays |   Caps per game |   Grabs per game |   Powerup fights per game |   Break-off grabs per game |   Regrab chains per game |   Bombs set off per game |   Bomb gifts per game |   Free past 4s per game | Caps after a bomb gift   | Skill effect, ranked   | Skill effect, public   | Clean games   |
