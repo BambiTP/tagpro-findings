@@ -99,6 +99,7 @@ Timings confirmed by Bambi.
 ## How pops happen
 - Mostly containment: chasers cut off the carrier's escape routes and close in.
 - A "solo" is a carrier dying to a single enemy. Bambi's view: it should never happen; carriers should only die when contained by 2 or more enemies, so a solo is an unforced error by the carrier. (Bots can solo with 100% accuracy.)
+  - How to tell a real solo (Bambi): no boost or bomb used on the carrier or by the defender who tagged them (including boosts that push someone into the play); no pressure from another enemy; the carrier had space from the walls (not pinned); and enough time since the grab (otherwise it is a bad grab). Many returns cannot be cleanly classified.
 
 ## Offense between grabs
 - The offense waits for boosts to respawn and tries rub grabs. Long stretches of this with no successful grab and hold are a stalemate.
