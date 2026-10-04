@@ -36,8 +36,7 @@ Timings confirmed by Bambi.
 
 ## Maps
 - The map pool changes every season. A few "juggernaut" maps have lasted for years. New maps are rare and most are not well liked.
-
-- Bomb luck (user's definition): bombs displace players who cannot react, so a team can get a free past 4 "for essentially no reason". The luck is in defenders/chasers being thrown out of position, not in the carrier being launched.
+- Bomb luck (Bambi's definition): bombs displace players who cannot react, so a team can get a free past 4 "for essentially no reason". The luck is in defenders/chasers being thrown out of position, not in the carrier being launched.
 - "Juggernaut" maps are the most sought-after thing for a map maker. Nobody really knows what makes a map one. Some players think maps are "perfected" and no new juggernauts can appear; Bambi is unsure.
 
 ## Game types
@@ -63,11 +62,11 @@ Timings confirmed by Bambi.
 - "Kiss": two flag carriers (one from each team) touching. Old rule: they popped each other. "No kiss" rule (introduced about 2-3 years before 2026, so roughly 2023-2024): they just bounce off each other like normal balls.
   - The no kiss rule applies ONLY in competitive play. Ranked still uses kissing (carriers pop each other). So ranked and comp play under different rules whenever both flags are out, and older comp data (before the change) also used kissing. Any analysis that learns from ranked and applies to comp has to account for this.
   - Bambi calls kissing and anti regrab the most confusing part of the game.
-  - With kissing (ranked, and comp before the change): kissing the enemy carrier was surprisingly easy (user is not sure why). A common OD pattern was "grab then kiss": the OD player grabs the enemy flag and immediately kisses the enemy carrier, popping both and returning both flags. No kiss removed this option in comp.
+  - With kissing (ranked, and comp before the change): kissing the enemy carrier was surprisingly easy (Bambi is not sure why). A common OD pattern was "grab then kiss": the OD player grabs the enemy flag and immediately kisses the enemy carrier, popping both and returning both flags. No kiss removed this option in comp.
   - Bambi's opinion (not established meta): after you die, it is always good to play anti regrab for at least a few seconds. Under no kiss this is riskier. It also depends on whether your death already broke the enemy regrab chain, among many other factors.
 - "Handoff": like a regrab chain, but the carrier dies quickly instead of after a long hold, and the regrab picks it up. A "cheese" regrab chain.
 - "Flaccid": a grab that is returned within about 3-4 seconds (exact cutoff unknown to Bambi).
-- "Prevent" (game stat): seconds where your flag is home, you are in your base, and an enemy is in your base too (user thinks within about a 5-tile radius; exact definition unconfirmed).
+- "Prevent" (game stat): seconds where your flag is home, you are in your base, and an enemy is in your base too (Bambi thinks within about a 5-tile radius; exact definition unconfirmed).
 - "Tag" (stat): you popped an enemy. Ways to tag: with tagpro, with gates (popping enemies via a gate), and returns (popping the enemy carrier). A return also counts as a tag. "Pop" (stat): you got popped.
 - "Stalemate": neither team can get a grab and hold it (grabs either do not happen or the carrier is popped quickly). Both flags stay at or keep returning to base.
 - "Past N": how many enemies the flag carrier has gotten past. Past 4 (all four enemies beaten) should be a cap unless the carrier messes up. So past 2 means two enemies are beaten and two are still in play against the carrier.
@@ -138,7 +137,7 @@ Grab strategy is much less contested than defense. Most players agree:
 - In novice play, weak players basically never leave base and only play anti regrab and defense. That style is seen as reserved for the worst players.
 
 ## Defense styles (highly contested)
-Grab strategies and defense strategies are both highly contested. The active/inactive framing below is the BAMBI'S OWN observation, not a known community concept; Bambi thinks they may be the only one who notices it. The two main defense styles:
+Grab strategies and defense strategies are both highly contested. The active/inactive framing below is Bambi's own observation, not a known community concept; Bambi thinks they may be the only one who notices it. The two main defense styles:
 - Active defense: defenders get up close to the offense around contested boosts and bombs and give the offense no real leeway. They try to stop the offense from using those elements at all.
 - Inactive defense: defenders stay near the flag and deal with boosts and bombs as they come (deflecting or absorbing the offense's element use) rather than preventing it.
 - Bambi is a strong advocate of inactive defense and gets called dumb for it by other players.
