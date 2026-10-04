@@ -66,6 +66,7 @@ Timings confirmed by Bambi.
   - Bambi's opinion (not established meta): after you die, it is always good to play anti regrab for at least a few seconds. Under no kiss this is riskier. It also depends on whether your death already broke the enemy regrab chain, among many other factors.
 - "Handoff": like a regrab chain, but the carrier dies quickly instead of after a long hold, and the regrab picks it up. A "cheese" regrab chain.
 - "Swipe": a failed return attempt: a defender commits to tagging the carrier, misses, and ends up behind them, so the carrier is suddenly past that defender.
+- "Bad grab": a grab that was a mistake in itself, e.g. grabbing with a defender right there, so the carrier dies almost instantly. It looks like a solo, but the fault is the decision to grab, not losing a chase; a quick death after a bad grab is not a solo.
 - "Flaccid": a grab that is returned within about 3-4 seconds (exact cutoff unknown to Bambi).
 - "Prevent" (game stat): seconds where your flag is home, you are in your base, and an enemy is in your base too (Bambi thinks within about a 5-tile radius; exact definition unconfirmed).
 - "Tag" (stat): you popped an enemy. Ways to tag: with tagpro, with gates (popping enemies via a gate), and returns (popping the enemy carrier). A return also counts as a tag. "Pop" (stat): you got popped.
