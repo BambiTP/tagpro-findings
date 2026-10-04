@@ -4,6 +4,7 @@ Results from analysing ranked TagPro: 10,564 ranked capture-the-flag replays wit
 positions (March 2025 to October 2026), about 135,000 ranked match records, and 2.48 million
 public and ranked games from tagpro.eu (2015 to 2026).
 
+- **[WRITEUP.md](WRITEUP.md): start here.** The full story, with GIFs of every concept.
 - [FINDINGS.md](FINDINGS.md): every result with its full data tables and how confident it is.
 - [GLOSSARY.md](GLOSSARY.md): what every term means, with real screenshots from ranked games.
 - [MAPS.md](MAPS.md): one big table, every map with every number.
