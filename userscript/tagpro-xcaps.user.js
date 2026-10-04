@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TagPro Expected Caps (replay overlay)
 // @namespace    https://github.com/BambiTP/tagpro-findings
-// @version      0.1.0
+// @version      0.2.0
 // @description  Shows each team's chance of capping in the next 30 seconds under the replay seek bar, each player's live contribution, and flags sudden drops (likely mistakes).
 // @match        https://tagpro.koalabeast.com/game?replay=*
 // @match        http://*/game?replay=*
@@ -14,8 +14,9 @@
      carrier's "past N" and distance to cap, how many players each team has alive / on its own side / near
      each flag, regrabs, powerups held, powerups on the map, score and time left.
    - Team view: the model's chance that red / blue caps within 30 s, drawn as two lines under the seek bar.
-   - Player view: a player's contribution = team chance now minus the team chance if that player were not
-     on the field. A sudden drop in one player's contribution is marked on the strip with their name.
+   - Player view: a player's net contribution = how much they raise their team's chance to cap (offense)
+     plus how much they lower the enemy's (denial), compared with the same moment without them. A sudden
+     drop in one player's net contribution is marked on the strip with their name.
    The model itself is embedded below as MODEL (exported from the Python training code). */
 
 (function () {
@@ -173,18 +174,20 @@
     ctx.fillStyle = '#ffd400';
     for (const m of marks) ctx.fillRect(X(m.t) - devicePixelRatio, 0, 2 * devicePixelRatio, h * 0.35);
   }
-  function renderPanel(red, blue, contrib, P) {
+  function renderPanel(red, blue, contrib, P, parts) {
+    const fmt = (v) => (v >= 0 ? '+' : '') + (v * 100).toFixed(1);
     const row = (p) => {
       const c = contrib[p.id] || 0, pct = (c * 100).toFixed(1), bar = Math.min(60, Math.abs(c) * 400);
       const col = c >= 0 ? '#5f5' : '#f55';
       return `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;opacity:${p.alive ? 1 : 0.45}">
         <span style="width:96px;overflow:hidden;white-space:nowrap;color:${p.team === 1 ? '#ff8a8a' : '#8ac4ff'}">${p.name}${p.flag ? ' ⚑' : ''}</span>
-        <span style="display:inline-block;height:8px;width:${bar}px;background:${col}"></span><span>${c >= 0 ? '+' : ''}${pct}</span></div>`;
+        <span style="display:inline-block;height:8px;width:${bar}px;background:${col}"></span><span>${c >= 0 ? '+' : ''}${pct}</span>
+        <span style="color:#888;font-size:11px">(${fmt(parts[p.id][0])} / ${fmt(parts[p.id][1])})</span></div>`;
     };
     const last = marks.slice(-3).reverse().map((m) => `<div style="color:#ffd400">${(m.t / 60000 | 0)}:${String(((m.t / 1000) % 60).toFixed(0)).padStart(2, '0')} ${m.name} −${(m.drop * 100).toFixed(0)}</div>`).join('');
     panel.innerHTML = `<div style="font-weight:600;margin-bottom:4px">Chance to cap in ${HORIZON_LABEL}</div>
       <div><span style="color:#ff6b6b">Red ${(red * 100).toFixed(0)}%</span> &nbsp; <span style="color:#6bb5ff">Blue ${(blue * 100).toFixed(0)}%</span></div>
-      <div style="margin:6px 0 2px;color:#aaa">Player contribution (points of team chance)</div>
+      <div style="margin:6px 0 2px;color:#aaa">Player net contribution (offense / denial), points</div>
       ${P.filter((p) => p.team === 1).map(row).join('')}<div style="height:4px"></div>${P.filter((p) => p.team === 2).map(row).join('')}
       ${last ? `<div style="margin-top:6px;color:#aaa">Recent sharp drops</div>${last}` : ''}`;
   }
@@ -196,10 +199,17 @@
     if (!(tagpro.state === 1 || tagpro.state === 5) || tagpro.replayPaused) return;   // only while playing
     const tMs = rp.currentTime, P = players();
     const red = predict(features(P, 1, tMs)), blue = predict(features(P, 2, tMs));
-    const contrib = {};
+    // net contribution: how much this player raises their own team's chance to cap AND lowers the
+    // enemy's, compared with the same moment without them (a regrab or anti player mostly earns the
+    // second part, which a "my team only" measure misses)
+    const contrib = {}, parts = {};
     for (const p of P) {
-      const base = p.team === 1 ? red : blue;
-      contrib[p.id] = base - predict(features(P, p.team, tMs, p.id));
+      const own = p.team, opp = 3 - own;
+      const ownNow = own === 1 ? red : blue, oppNow = own === 1 ? blue : red;
+      const ownWithout = predict(features(P, own, tMs, p.id)), oppWithout = predict(features(P, opp, tMs, p.id));
+      const offense = ownNow - ownWithout, denial = oppWithout - oppNow;
+      parts[p.id] = [offense, denial];
+      contrib[p.id] = offense + denial;
       const h = (contribHist[p.id] = contribHist[p.id] || []);
       h.push([tMs, contrib[p.id]]);
       while (h.length && tMs - h[0][0] > 1500) h.shift();
@@ -218,7 +228,7 @@
     // directly under the matching point of the seek bar
     const seekMax = Number((document.getElementById('replaySeekBar') || {}).max) || tMs;
     draw(seekMax);
-    renderPanel(red, blue, contrib, P);
+    renderPanel(red, blue, contrib, P, parts);
   }
 
   const wait = setInterval(() => {

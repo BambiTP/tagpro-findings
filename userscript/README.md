@@ -4,8 +4,10 @@ Shows, while you watch any replay on tagpro.koalabeast.com (or a local tagpro-lo
 
 - **Team view:** a strip right under the seek bar with each team's chance of capping in the next
   30 seconds (red and blue lines), drawn as the replay plays.
-- **Player view:** a panel listing each player's live contribution: how much their team's chance would
-  drop if that player weren't on the field (green = helping, red = hurting).
+- **Player view:** a panel listing each player's live **net** contribution, split into offense / denial:
+  how much they raise their team's chance to cap, plus how much they lower the enemy's, compared with
+  the same moment without them (green = helping, red = hurting). Denial is what credits regrabs, anti
+  regrab and defenders, who mostly stop the enemy rather than create caps.
 - **Sharp drops:** yellow ticks on the strip, and a "Recent sharp drops" list, when one player's
   contribution falls 12+ points within about 1.5 seconds *and* their team's chance falls 8+ points.
   These are candidate mistakes, not verdicts; watch the moment and judge.
@@ -37,7 +39,7 @@ in the next 30 seconds" is a noisy thing to predict, so treat swings as signals,
 
 ## Known limits
 - The strip fills in as you watch; seeking back clears it.
-- Player contribution is "this team minus this player", which mostly reflects position and role at
-  that moment; it does not see jukes, contact, or intent.
+- Player contribution is "the board with vs without this player", which mostly reflects position and
+  role at that moment; it does not see jukes, contact, or intent.
 - The 12-point and 8-point thresholds for sharp drops are first guesses; change `MISTAKE_DROP` and
   `TEAM_DROP` at the top of the script.
