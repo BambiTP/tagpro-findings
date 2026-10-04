@@ -196,3 +196,31 @@ expected on a map, minus how they do everywhere else.
 - Conclusion: players' success on particular maps is almost all luck; skill carries across maps.
   "Map specialists" (e.g. +21 points on one map over 63 games) are what the luckiest of thousands of
   records look like by chance.
+
+## Stealth / "plague offense" (the user's technique) (2026-10-03)
+Script: `stealth.py`. While attacking (alive, enemy half, enemy flag home): contacts = coming within
+1.1 tiles of an enemy; spacing = distance to the nearest enemy. Stealth grab = a grab after 6 s within
+12 tiles of the enemy flag with zero contacts. Success, per the user, is getting past 2 or holding
+long, not capping (caps depend on everything after the grab and even out).
+- Bambi: spacing 4.17 tiles while attacking (more than 84% of 779 players; median 3.81), 12.5
+  contacts per attacking minute (fewer than 75%; median 13.5).
+- All players, grabs after 6 s near the enemy base:
+  stealth 128,779 grabs: past 2 within 4 s 49.4%, held 10 s+ 30.7%, median hold 6.5 s, capped 9.1%;
+  some contact (1-2) 217,191: 59.0%, 20.3%, 4.3 s, 8.5%;
+  contact-heavy (3+) 36,411: 63.5%, 14.1%, 2.8 s, 7.0%.
+- Trade-off: contact grabs break through faster (displaced defenders are passed immediately);
+  stealth grabs are held more than twice as long. Bambi shows the same direction more weakly
+  (stealth held 10 s+ 25% vs 21% contact-heavy, but only 14 contact-heavy grabs).
+- Caveat: stealth grabs may simply happen when the defense is already thin, which would also give
+  long holds; needs a habits-across-games test before calling it cause and effect.
+
+### Correction: stealth grabs must have the enemy flag in base (user's correction)
+- The first stealth definition did not require the enemy flag to be home during the approach, so it
+  counted regrabs and handoffs (waiting quietly on the empty tile). With the flag-in-base rule, stealth
+  grabs drop from 128,779 to 10,328, and the earlier "held twice as long" result disappears.
+- Corrected (all players, flag in base, 6 s near the enemy base): stealth 10,328 grabs: past 2 within
+  4 s 66.5%, held 10 s+ 16.3%, median hold 3.5 s, capped 8.3%; some contact 69,933: 64.6%, 13.9%,
+  2.8 s, 7.7%; contact-heavy 16,685: 65.0%, 12.0%, 2.3 s, 6.5%. Stealth slightly ahead on every
+  measure, small margins. Bambi: 10 true stealth grabs.
+- Clips are now rendered straight from replay data with the real TagPro textures (`render_clip.py`),
+  about 7 s per 10 s clip, as GIF and MP4.
