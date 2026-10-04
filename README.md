@@ -9,6 +9,7 @@ public and ranked games from tagpro.eu (2015 to 2026).
 - [GLOSSARY.md](GLOSSARY.md): what every term means, with real screenshots from ranked games.
 - [MAPS.md](MAPS.md): one big table, every map with every number.
 - [PLAYERS.md](PLAYERS.md): rating leaderboard of the top 150 active players with record and defensive style.
+- **[userscript/](userscript/): replay overlay** showing each team's live chance to cap and each player's contribution, with sharp drops flagged.
 - [RESEARCH_LOG.md](RESEARCH_LOG.md): the order the work was done in, including dead ends and corrections.
 
 Highlights:
