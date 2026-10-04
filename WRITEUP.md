@@ -7,8 +7,9 @@ argue about: parking the bus, powerups, luck, defense styles, and whether some p
 some maps. Everything here was checked against the real TagPro client, and every result comes with
 how confident it is and what could make it wrong.
 
-All clips below are real ranked games, played back in the actual TagPro client (the
-[tagpro-local](https://github.com/BambiTP/tagpro-local) replay viewer). Full definitions are in
+All clips below are real ranked games, drawn straight from the replay recordings with TagPro's real
+textures (positions are the recorded ones, 4 per second, smoothed between). Sharper MP4 versions of
+every clip, for posting, are in [videos/](videos/). Full definitions are in
 [GLOSSARY.md](GLOSSARY.md); full tables in [FINDINGS.md](FINDINGS.md).
 
 ---
@@ -21,9 +22,9 @@ waiting on the enemy's empty flag tile grabs it straight back, so the team keeps
 ![Regrab chain](gifs/regrab_chain.gif)
 
 **Handoff.** The same pickup, but the carrier dies quickly, right as the regrab is ready. In the
-game's own stats, 96% of handoffs come after a hold under 2 seconds. Here kant (blue) is caught in
-the corner, Old Pubabarr picks it up from the tile, and then holds it for 32 seconds; the game counts
-this as a good handoff.
+game's own stats, 96% of handoffs come after a hold under 2 seconds. Here, on OTI Jardim, the blue
+carrier goes down and Bambi takes the flag straight off the tile, gets past 2 and holds it for 57
+seconds.
 
 ![Handoff](gifs/handoff.gif)
 
@@ -292,24 +293,33 @@ moving around them, and grab when the defense suddenly gets out of position or a
 defender. Success is measured by getting past 2 or holding long, not by caps (caps depend on
 everything after the grab and even out).
 
-**Three of Bambi's stealth grabs.** OTI Jardim (past 2, held 57 s), Combine (past 2, held 31 s),
-Basenji (past 2, held 16 s, capped):
+A stealth grab here means: the enemy flag was in base for the whole approach (so it is not a regrab or
+handoff), the player spent the 6 seconds before the grab near the enemy base, and no enemy came within
+close-contact range in that time. (An earlier version of this section forgot the flag-in-base rule and
+counted regrabs as stealth grabs; the numbers below are corrected.)
 
-![Stealth grab, OTI Jardim](gifs/stealth_oti_jardim.gif)
-![Stealth grab, Combine](gifs/stealth_combine.gif)
-![Stealth grab, Basenji](gifs/stealth_basenji.gif)
+**Bambi's two best stealth grabs** (Basenji: past 2, held 16 s; Basenji again: past 2):
 
-**All players**, grabs made after 6 seconds near the enemy base, by how much close contact came
-before the grab:
+![Stealth grab, Bambi, Basenji](gifs/stealth_bambi_basenji.gif)
+![Stealth grab, Bambi, Basenji 2](gifs/stealth_bambi_basenji_2.gif)
+
+**Two of the best stealth grabs by anyone** (tng. on Thicket 2: held 63 s and capped; hue on Sardonica:
+held 57 s and capped):
+
+![Stealth grab, tng., Thicket 2](gifs/stealth_tng_thicket2.gif)
+![Stealth grab, hue, Sardonica](gifs/stealth_hue_sardonica.gif)
+
+**All players**, grabs made with the flag in base after 6 seconds near the enemy base, by how much close
+contact came before the grab:
 
 | Grab type | Grabs | Past 2 within 4 s | Held 10 s+ | Median hold | Capped |
 |---|---|---|---|---|---|
-| No close contact for 6 s | 128,779 | 49.4% | 30.7% | 6.5 s | 9.1% |
-| Some close contact (1-2) | 217,191 | 59.0% | 20.3% | 4.3 s | 8.5% |
-| Contact-heavy (3+) | 36,411 | 63.5% | 14.1% | 2.8 s | 7.0% |
+| Stealth (no close contact for 6 s) | 10,328 | 66.5% | 16.3% | 3.5 s | 8.3% |
+| Some close contact (1-2) | 69,933 | 64.6% | 13.9% | 2.8 s | 7.7% |
+| Contact-heavy (3+) | 16,685 | 65.0% | 12.0% | 2.3 s | 6.5% |
 
-Contact grabs break through faster (displaced defenders are passed immediately); quiet grabs are held
-more than twice as long. Caveat: quiet grabs may simply happen when the defense is already thin.
+Stealth grabs come out slightly ahead on every measure, by small margins. Bambi has only 10 true stealth
+grabs in ranked (8 reached past 2 within 4 seconds), too few to judge on their own.
 
 **Where Bambi ranks** (778 to 805 players with enough games; measures fixed before looking, except the
 last two, which were added afterwards from the description of the style):
@@ -317,7 +327,7 @@ last two, which were added afterwards from the description of the style):
 | Measure | Bambi | Median player | Bambi higher than |
 |---|---|---|---|
 | Spacing from the nearest enemy while attacking | 4.17 tiles | 3.81 | 84% |
-| Share of grabs near the base with no close contact for 6 s | 42.6% | 35.6% | 73% |
+| Share of grabs near the base with no close contact for 6 s (before the flag-in-base correction) | 42.6% | 35.6% | 73% |
 | Attacking minutes per grab (patience) | 0.275 | 0.251 | 67% |
 | Median hold | 5.4 s | 5.0 s | 65% |
 | Grabs held 10 s+ | 21.8% | 23.3% | 37% |
