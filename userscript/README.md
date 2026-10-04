@@ -12,6 +12,16 @@ Shows, while you watch any replay on tagpro.koalabeast.com (or a local tagpro-lo
   contribution falls 12+ points within about 1.5 seconds *and* their team's chance falls 8+ points.
   These are candidate mistakes, not verdicts; watch the moment and judge.
 
+## Version 0.3: computed on a server, drawn in the browser
+The script no longer runs the model in your browser (that was laggy). It sends the replay's recorded
+packets (which the page already has) to an xCaps server, which computes the whole game at once (about
+7 seconds the first time, instant after that) and sends back a small timeline (~60 KB). The full-game
+strip appears immediately, and the browser only looks up the current moment.
+
+The first time it runs, it asks for the **server address** and **access key**; click the panel title (⚙)
+to change them later. The server currently runs on the author's machine behind a cloudflared tunnel;
+the tunnel address changes whenever the tunnel restarts.
+
 ## Install
 1. Install a userscript manager: [Tampermonkey](https://www.tampermonkey.net/) or
    [Violentmonkey](https://violentmonkey.github.io/).
@@ -21,8 +31,7 @@ Shows, while you watch any replay on tagpro.koalabeast.com (or a local tagpro-lo
 3. Open any replay (`https://tagpro.koalabeast.com/game?replay=...`) and press play.
 
 ## How it works
-The model is embedded in the script (about 0.6 MB) and everything runs in your browser; nothing is
-sent anywhere. Every 0.25 s it reads the board from the replay viewer: flags, each carrier's past N
+Every 0.25 s of the game, the server reads the board from the replay viewer: flags, each carrier's past N
 and walking distance to cap, how many players each team has alive, on its own side and near each flag,
 regrabs, powerups held and on the map, score and time left.
 
@@ -38,8 +47,9 @@ It is well calibrated (when it says 24%, teams capped 23.4% of the time; at 89%,
 in the next 30 seconds" is a noisy thing to predict, so treat swings as signals, not certainties.
 
 ## Known limits
-- The strip fills in as you watch; seeking back clears it.
 - Player contribution is "the board with vs without this player", which mostly reflects position and
   role at that moment; it does not see jukes, contact, or intent.
-- The 12-point and 8-point thresholds for sharp drops are first guesses; change `MISTAKE_DROP` and
-  `TEAM_DROP` at the top of the script.
+- Sharp drops: flagged only when one player's net contribution falls 12+ points within 1.5 s, their
+  team's chance falls 8+ points, the player stayed alive (pops already show on the seek bar), it is
+  not within 1 s of a grab, cap or return, and the drop is at least twice the next teammate's. About 10
+  per game.
