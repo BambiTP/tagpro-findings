@@ -25,6 +25,10 @@ Highlights:
 - **Bomb luck.** Combine has the most bomb-caused "free past 4s" of any map; Basenji and Oak the
   fewest. Overall per-map luck (how reliably the better team wins) cannot be ranked reliably yet.
 - **No map specialists.** Players' success on particular maps is luck; skill carries across maps.
+- **The scoreboard order barely shows who is better.** In one game the top of the board is mostly
+  the winning team (83% of top spots), and the bottom of a team is its lowest-rated player only 34%
+  of the time (25% by chance). Over many games, playing offence puts you at the bottom more than a
+  low rating does.
 - **Active vs inactive defense.** The style is clearly measurable (it picks out known active and
   inactive defenders), but in ranked it does not predict winning either way yet.
 

@@ -224,3 +224,22 @@ long, not capping (caps depend on everything after the grab and even out).
   measure, small margins. Bambi: 10 true stealth grabs.
 - Clips are now rendered straight from replay data with the real TagPro textures (`render_clip.py`),
   about 7 s per 10 s clip, as GIF and MP4.
+
+## Does the scoreboard order show who is better? (the user's question) (2026-10-12)
+Scripts: `scoreboard_extract.py` (final scoreboard per player from every ranked replay; summed event
+value per player from the ~/nte model, run 3), `scoreboard.py`.
+- First assumption was wrong: the scoreboard is not sorted by the old points formula (100 per cap, 5
+  per grab, tag, return and powerup, 1 per second of hold and prevent, minus 1 per pop). In 30 sampled
+  replays 236 of 266 final scores did not match it. The client code shows the current score,
+  "IPMv1.1": per-game standardised offence (captures per minute, hold per minute, captures per grab)
+  and defence (tags per pop, returns per minute, prevent per minute, non-return tags per minute),
+  combined as two thirds of the better side plus one third of the worse, rescaled to 50 plus 20 per
+  standard deviation. The scoreboard sorts by it, quitters last.
+- 11,237 clean ranked games: top slot is on the winning team 83% of the time, bottom slot 21%. Board
+  order vs rating rank correlation 0.16 (lobby), 0.17 (team). Bottom of a team = its lowest-rated
+  34% (chance 25%). Board order vs event value within a team 0.11.
+- 467 players with 50+ games: bottom-of-team rate is a stable habit (odd vs even games 0.78), linked
+  to lower rating (-0.37) but more to playing offence-leaning (0.53). Both fitted together: one
+  standard deviation of offence +5.8 points of bottom finishes, one of rating -4.1.
+- Caveat: offence-leaning comes from the scoreboard's own offence and defence numbers; a
+  position-based role (time on the enemy half) would be a cleaner check.

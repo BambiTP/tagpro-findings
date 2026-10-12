@@ -276,6 +276,82 @@ like by chance.
 
 ---
 
+## 8. Does the scoreboard order show who is better? (solid: barely, in one game)
+
+**Caveats first.** "Better" here means the ranked system's own rating before the game, which is
+itself an estimate. "Contribution" means the event-value model (how much each grab, cap, return,
+tag and pop changed the team's chance of capturing next), which, like the scoreboard, cannot see
+blocking, positioning or anti-regrab. Ranked matchmaking puts players of similar rating in the same
+lobby, which makes skill harder to see inside any one game. Offence-leaning and defence-leaning are
+judged from the scoreboard's own offence and defence numbers, so the role result below is suggestive,
+not solid.
+
+**How the order is made.** The scoreboard sorts top to bottom by the client's score (players who
+quit go to the bottom). It is not the old "100 per cap" points: the current client calls it
+"IPMv1.1", and the numbers in real replays match it, not the old formula. Every stat is compared only
+with the other players in that same game, then rescaled so the game averages 50:
+
+| Side | What counts (weight) |
+|---|---|
+| Offence | captures per minute (20), hold per minute (38), captures per grab (42) |
+| Defence | tags per pop (18), returns per minute (34), prevent per minute (40), tags that were not returns, per minute (8) |
+| Total | two thirds of your better side plus one third of your weaker side |
+
+Grabs that do not become caps lower "captures per grab", so an offence player who keeps generating
+grabs can rank below one who rarely grabs. Blocking, regrabbing, anti-regrab and powerups count for
+nothing.
+
+**One game.** 11,237 clean ranked capture-the-flag games where all eight players finished:
+
+| Scoreboard slot | 1 (top) | 2 | 3 | 4 | 5 | 6 | 7 | 8 (bottom) |
+|---|---|---|---|---|---|---|---|---|
+| On the winning team | 83% | 76% | 66% | 55% | 40% | 32% | 27% | 21% |
+| Average rating | 854 | 842 | 836 | 832 | 831 | 825 | 816 | 803 |
+| Highest-rated in the lobby (chance 12.5%) | 18% | 15% | 14% | 13% | 12% | 12% | 9% | 7% |
+| Lowest-rated in the lobby (chance 12.5%) | 8% | 10% | 11% | 12% | 12% | 14% | 16% | 19% |
+
+- The board mostly sorts by which team won: captures and captures per grab go to the scoring team.
+- Rank correlation between board order and rating: 0.16 across the lobby, 0.17 within a team (0 =
+  no relationship, 1 = identical order).
+- **The bottom of a team** is that team's lowest-rated player 34% of the time (chance 25%) and its
+  highest-rated player 18% of the time. On average the bottom player is rated 30 points below their
+  three teammates, when ratings inside a team typically spread by 73; in 39% of games the bottom player
+  is rated above their teammates' average.
+- Against the event-value model, board order within a team agrees only weakly (rank correlation
+  0.11), and the bottom of a team has the team's lowest event value 26% of the time, close to chance
+  (25%). The event-value model itself only correlates 0.09 with rating, so neither is a clean measure
+  of contribution.
+
+**Many games.** 467 players with at least 50 clean games:
+
+- Average score correlates 0.41 with rating and 0.50 with win rate (rating alone: 0.31 with win rate).
+  Part of the win-rate link is circular, because winning raises your score.
+- How often a player finishes bottom of their team is a stable habit: their odd-numbered games and
+  even-numbered games agree (correlation 0.78). Median 24% of games; 10th to 90th percentile 12% to 39%.
+- Players finishing bottom most often are lower rated (quarter that is bottom most often: average
+  rating 708 and 49% wins; quarter that is bottom least often: 874 and 52%).
+- **But role matters more than rating.** Finishing bottom correlates 0.53 with how often a player plays
+  offence-leaning, against -0.37 with rating. Fitting both together, one standard deviation more
+  offence adds 5.8 percentage points of bottom finishes; one standard deviation more rating removes 4.1.
+
+| Share of games at the bottom of their team | Lower-rated half | Higher-rated half |
+|---|---|---|
+| Mostly defence (59 and 63 players) | 19.7% | 13.4% |
+| Mixed (105 and 103) | 28.7% | 23.5% |
+| Mostly offence (70 and 67) | 35.0% | 26.3% |
+
+A higher-rated offence player finishes bottom more often than a lower-rated defender.
+
+**Bottom line.** In one game, being at the bottom of the scoreboard is weak evidence of being the
+worst player: about one time in three it is the team's lowest-rated player, against one in four by
+chance, and it often just means your team lost or you played offence. Over dozens of games, a player
+who is always near the bottom does tend to be lower rated, but the role they play explains more of it
+than their rating does.
+
+Script: `scoreboard.py` (data extraction: `scoreboard_extract.py`).
+
+---
+
 ## Corrections made along the way
 
 - An early version said Basenji was the most skill-decided map. That came from a first, rough
