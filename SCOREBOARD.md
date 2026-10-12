@@ -126,6 +126,11 @@ bottom finishes; one standard deviation more rating removes 4.1. Role moves you 
 
 A higher-rated offence player finishes at the bottom more often than a lower-rated defender.
 
+## Who scores best over many games
+
+The players with the highest average scores, split into offence and defence boards so the two roles
+are never compared with each other, are in [SCOREBOARD_PLAYERS.md](SCOREBOARD_PLAYERS.md).
+
 ## So how should you read the scoreboard?
 
 - **In one game:** the top tells you mostly who won and who held or capped the flag; the bottom is the

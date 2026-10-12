@@ -9,7 +9,7 @@ public and ranked games from tagpro.eu (2015 to 2026).
 - [FINDINGS.md](FINDINGS.md): every result with its full data tables and how confident it is.
 - [GLOSSARY.md](GLOSSARY.md): what every term means, with real screenshots from ranked games.
 - [MAPS.md](MAPS.md): one big table, every map with every number.
-- [SCOREBOARD.md](SCOREBOARD.md): what the in-game scoreboard order does and does not tell you, including the bottom of the board.
+- [SCOREBOARD.md](SCOREBOARD.md): what the in-game scoreboard order does and does not tell you, including the bottom of the board. [SCOREBOARD_PLAYERS.md](SCOREBOARD_PLAYERS.md) lists the top scorers over many games, with separate offence and defence boards.
 - [PLAYERS.md](PLAYERS.md): rating leaderboard of the top 150 active players with record and defensive style.
 - **[userscript/](userscript/): replay overlay** showing each team's live chance to cap and each player's contribution, with sharp drops flagged.
 - [RESEARCH_LOG.md](RESEARCH_LOG.md): the order the work was done in, including dead ends and corrections.
